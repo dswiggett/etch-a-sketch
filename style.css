@@ -1,7 +1,13 @@
+.buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .game-box {
     position: relative;
-    top: 150px;
-    margin: 0 20%;
+    top: 70px;
+    margin: 0 450px;
     display: flex;
     flex-wrap: wrap;
 }
