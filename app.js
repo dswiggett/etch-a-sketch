@@ -5,7 +5,7 @@ let element;
 // button variables
 let colorPicker = document.querySelector('#color-picker');
 let colorMode = document.querySelector('#color-mode');
-let rainbowColor = document.querySelector('#rainbow-color');
+let rainbowMode = document.querySelector('#rainbow-mode');
 let eraser = document.querySelector('#eraser');
 let eraserOn = false;
 let clear = document.querySelector('#clear');
@@ -24,10 +24,33 @@ for (let i = 1; i <= 256; i++) {
 etchSketchColors('black');
 
 // color picker
+colorPicker.addEventListener('input', () => {
+    let colorPicked = colorPicker.value;
+    etchSketchColors(colorPicked);
+});
 
 // color mode
+colorMode.addEventListener('click', () => {
+    etchSketchColors('black');
+});
 
 // rainbow mode
+let num = -1;
+rainbowMode.addEventListener('click', () => {
+    let rainbowColors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
+    divs.forEach(div => {
+        div.addEventListener('mouseenter', () => {
+            num++;
+            console.log(num)
+            if (num === 6) {
+                num = 0;
+            }
+            console.log(div.style.backgroundColor = rainbowColors[num])
+            div.style.backgroundColor = rainbowColors[num];
+            div.style.cursor = 'move';
+        });
+    });
+});
 
 // erase sketch
 eraser.addEventListener('click', () => {
@@ -53,6 +76,7 @@ function etchSketchColors(color) {
     divs.forEach(div => {
         div.addEventListener('mouseenter', () => {
             div.style.backgroundColor = color;
+            div.style.cursor = 'move';
         });
     });
 }
