@@ -9,16 +9,13 @@ let rainbowMode = document.querySelector('#rainbow-mode');
 let eraser = document.querySelector('#eraser');
 let eraserOn = false;
 let clear = document.querySelector('#clear');
+let gridNum = document.querySelector('#grid-num');
+let gridSize = document.querySelector('#grid');
+let size = document.querySelector('#grid').value;
 
 // create 16x16 grid of square divs inside game box
-for (let i = 1; i <= 256; i++) {
-    element = document.createElement('div');
-    element.style.cssText = 'border: 1px solid black; padding: 15px;';
-    element.setAttribute('class', 'grid');
-    gameBox.appendChild(element);
-
-    divs.push(element);
-}
+gridNum.textContent = `${size} x ${size}`;
+createGrid(size);
 
 // when hovering over element change background color - figure out how to do it with a click then drag, instead of a hover
 etchSketchColors('black');
@@ -70,6 +67,23 @@ clear.addEventListener('click', () => {
 })
 
 // grid size
+gridSize.addEventListener('input', () => {
+    size = document.querySelector('#grid').value;
+    gridNum.textContent = `${size} x ${size}`;
+    createGrid(size);
+});
+
+// function to create grid
+function createGrid(grids) {
+    for (let i = 1; i <= grids * grids; i++) {
+        element = document.createElement('div');
+        element.style.cssText = 'border: 1px solid black; padding: 15px;';
+        element.setAttribute('class', 'grid');
+        gameBox.appendChild(element);
+    
+        divs.push(element);
+    }
+}
 
 // function to hold forEach
 function etchSketchColors(color) {
