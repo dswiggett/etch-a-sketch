@@ -3,6 +3,7 @@ let divs = [];
 let element;
 
 // button variables
+let sketchOn = false;
 let colorPicker = document.querySelector('#color-picker');
 let colorMode = document.querySelector('#color-mode');
 let rainbowMode = document.querySelector('#rainbow-mode');
@@ -18,7 +19,9 @@ gridNum.textContent = `${size} x ${size}`;
 createGrid(size);
 
 // when hovering over element change background color
-etchSketchColors('black');
+gameBox.addEventListener('click', () => {
+    etchSketchColors('black');
+});
 
 // color picker
 colorPicker.addEventListener('input', () => {
@@ -85,14 +88,23 @@ function createGrid(grids) {
 }
 
 // function to hold forEach
-// figure out how to stop the sketching with another click
 function etchSketchColors(color) {
-    divs.forEach(div => {
-        gameBox.addEventListener('click', () => {
+    sketchOn = !sketchOn;
+    if (sketchOn) {
+        divs.forEach(div => {
             div.style.cursor = 'pointer';
             div.addEventListener('mouseenter', () => {
                 div.style.backgroundColor = color;
             });
         });
-    });
+    }
+
+    if (!sketchOn) {
+        divs.forEach(div => {
+            div.style.cursor = 'auto';
+            div.addEventListener('mouseenter', () => {
+                div.style.backgroundColor = 'white';
+            });
+        });
+    }
 }
