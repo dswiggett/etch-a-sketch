@@ -1,79 +1,15 @@
+// general variables
 let gameBox = document.querySelector('.game-box');
 let divs = [];
 let element;
 
-// button variables
-let sketchOn = false;
-let colorPicker = document.querySelector('#color-picker');
-let colorMode = document.querySelector('#color-mode');
-let rainbowMode = document.querySelector('#rainbow-mode');
-let eraser = document.querySelector('#eraser');
-let eraserOn = false;
-let clear = document.querySelector('#clear');
+//// GRID ////
 let gridNum = document.querySelector('#grid-num');
 let gridSize = document.querySelector('#grid');
 let size = document.querySelector('#grid').value;
-
 // create 16x16 grid of square divs inside game box - readjust grid 
 gridNum.textContent = `${size} x ${size}`;
 createGrid(size);
-
-// when hovering over element change background color
-gameBox.addEventListener('click', () => {
-    etchSketchColors('black');
-});
-
-// color picker
-colorPicker.addEventListener('input', () => {
-    let colorPicked = colorPicker.value;
-    etchSketchColors(colorPicked);
-});
-
-// color mode
-colorMode.addEventListener('click', () => {
-    etchSketchColors('black');
-});
-
-// rainbow mode
-let num = -1;
-rainbowMode.addEventListener('click', () => {
-    let rainbowColors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
-    divs.forEach(div => {
-        div.addEventListener('mouseenter', () => {
-            num++;
-            if (num === 6) {
-                num = 0;
-            }
-            div.style.backgroundColor = rainbowColors[num];
-            div.style.cursor = 'move';
-        });
-    });
-});
-
-// erase sketch
-eraser.addEventListener('click', () => {
-    eraserOn = !eraserOn;
-    if (eraserOn === true) {
-        etchSketchColors('white');
-    } else {
-        etchSketchColors('black');
-    }
-})
-
-// clear sketch
-clear.addEventListener('click', () => {
-    divs.forEach(div => {
-        div.style.backgroundColor = 'white';
-    });
-})
-
-// grid size
-gridSize.addEventListener('input', () => {
-    size = document.querySelector('#grid').value;
-    gridNum.textContent = `${size} x ${size}`;
-    gameBox.innerHTML = "";
-    createGrid(size);
-});
 
 // function to create grid
 function createGrid(grids) {
@@ -87,23 +23,53 @@ function createGrid(grids) {
     }
 }
 
-// function to hold forEach
-function etchSketchColors(color) {
+//// FUNCTIONALITY ////
+let sketchOn = false;
+let colorOn = false;
+let colorPicker = document.querySelector('#color-picker');
+let rainbowMode = document.querySelector('#rainbow-mode');
+let eraser = document.querySelector('#eraser');
+let clear = document.querySelector('#clear');
+// start etch-a-sketch by clicking on grid
+gameBox.addEventListener('click', () => {
     sketchOn = !sketchOn;
-    if (sketchOn) {
+    forEachSketch(sketchOn, 'black', 'white');
+});
+// color picker
+colorPicker.addEventListener('input', () => {
+    let colorPicked = colorPicker.value;
+    gameBox.addEventListener('click', () => {
+        colorOn = !colorOn;
+        forEachSketch(colorOn, colorPicked, 'white');
+    });
+});
+// rainbow mode
+
+// eraser
+
+// clear
+clear.addEventListener('click', () => {
+    divs.forEach(div => {
+        div.style.backgroundColor = 'white';
+    });
+});
+
+// function to keep from repetition
+function forEachSketch(bool, colorOn, colorOff) {
+    if (bool) {
+        gameBox.style.cursor = 'pointer';
         divs.forEach(div => {
-            div.style.cursor = 'pointer';
-            div.addEventListener('mouseenter', () => {
-                div.style.backgroundColor = color;
+            div.addEventListener('mouseover', () => {
+                div.style.backgroundColor = colorOn;
             });
         });
     }
-
-    if (!sketchOn) {
+    // figure out how to fix this, the white background goes over the black background;
+    if (!bool) {
+        gameBox.style.cursor = 'auto'; 
         divs.forEach(div => {
-            div.style.cursor = 'auto';
-            div.addEventListener('mouseenter', () => {
-                div.style.backgroundColor = 'white';
+            div.addEventListener('mouseover', () => {
+                div.style.backgroundColor = colorOff;
             });
         });
     }
