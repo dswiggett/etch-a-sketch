@@ -7,7 +7,8 @@
 .game-box {
     position: relative;
     top: 70px;
-    margin: 0 450px;
+    margin: 0 454px;
     display: flex;
     flex-wrap: wrap;
+    border: 2px solid black;
 }
