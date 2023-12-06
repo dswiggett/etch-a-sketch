@@ -28,6 +28,7 @@ function createGrid(grids) {
 let sketchOn = false;
 let colorOn = false;
 let rainbowOn = false;
+let eraserOn = false;
 let colorPicker = document.querySelector('#color-picker');
 let rainbowMode = document.querySelector('#rainbow-mode');
 let eraser = document.querySelector('#eraser');
@@ -36,15 +37,15 @@ let clear = document.querySelector('#clear');
 // start etch-a-sketch by clicking on grid
 gameBox.addEventListener('click', () => {
     sketchOn = !sketchOn;
-    forEachSketch(sketchOn, 'black', 'white', undefined);
+    forEachSketch(sketchOn, 'black', undefined);
 });
 
-// color picker
+// color picker - ERROR WON'T USE SECOND COLOR WHEN COLOR PICKER WAS ALREADY USED
 colorPicker.addEventListener('input', () => {
     let colorPicked = colorPicker.value;
     gameBox.addEventListener('click', () => {
         colorOn = !colorOn;
-        forEachSketch(colorOn, colorPicked, 'white', undefined);
+        forEachSketch(colorOn, colorPicked, undefined);
     });
 });
 
@@ -54,11 +55,17 @@ rainbowMode.addEventListener('click', () => {
     gameBox.addEventListener('click', () => {
         rainbowOn = !rainbowOn;
         let x = 0;
-        forEachSketch(rainbowOn, rainbowColors, 'white', x);
+        forEachSketch(rainbowOn, rainbowColors, x);
     });
 });
 
 // eraser
+eraser.addEventListener('click', () => {
+    gameBox.addEventListener('click', () => {
+        eraserOn = !eraserOn;
+        forEachSketch(eraserOn, 'white', undefined);
+    });
+});
 
 // clear
 clear.addEventListener('click', () => {
@@ -68,31 +75,39 @@ clear.addEventListener('click', () => {
 });
 
 // function to keep from repetition
-function forEachSketch(bool, colorOn, colorOff, x) {
-    if (bool) {
-        gameBox.style.cursor = 'pointer';
-        divs.forEach(div => {
-            div.addEventListener('mouseover', () => {
-                div.style.backgroundColor = colorOn;
-                
-                // if rainbow mode is clicked
-                if (bool === rainbowOn) {
-                    div.style.backgroundColor = colorOn[x];
-                    x++;
-                    if (x === 7) {
-                        x = 0;
+function forEachSketch(bool, colorOn, x) {
+        if (bool) {
+            divs.forEach(div => {
+                gameBox.style.cursor = 'pointer';
+                div.onmouseover = event => {
+                    let target = event.target;
+                    target.style.background = colorOn;
+                    // if rainbow mode is clicked
+                    if (bool === rainbowOn) {
+                        div.style.backgroundColor = colorOn[x];
+                        x++;
+                        if (x === 7) {
+                            x = 0;
+                        }
                     }
                 }
-            });
-        });
-    }
-    // figure out how to fix this, the white background goes over the black background;
-    if (!bool) {
-        gameBox.style.cursor = 'auto'; 
-        divs.forEach(div => {
-            div.addEventListener('mouseover', () => {
-                div.style.backgroundColor = colorOff;
-            });
-        });
-    }
+            })
+        }
+
+        if (!bool) {
+            divs.forEach(div => {
+                gameBox.style.cursor = 'auto';
+                div.onmouseover = event => {
+                    let target = event.target;
+                    let targetColor = target.style.backgroundColor;
+                    target.style.background = targetColor;
+                }
+            })
+        }
 }
+
+// TO-DO LIST 
+    // color picker bug
+    // add directions button with directions on how to use
+    // grid sizer
+    // style it
