@@ -13,8 +13,9 @@ let grid = document.querySelector('#grid');
 gridNum.textContent = `${size} x ${size}`;
 createGrid(size);
 
-// function to size grid - IT CREATES THE GRID WITH THE SIZE BUT NOT EVENLY HORIZONTALLY AND VERTICALLY, JUST VERTICALLY... ISSUE MUST BE IN THE CSS
+// function to size grid - FIGURE OUT THE POSITIONING OF IT (CENTERED ON PAGE)
 grid.addEventListener('input', e => {
+    gameBox.innerHTML = '';
     size = e.target.value;
     gridNum.textContent = `${size} x ${size}`;
     createGrid(size);
@@ -25,11 +26,22 @@ function createGrid(grids) {
     for (let i = 1; i <= grids * grids; i++) {
         element = document.createElement('div');
         element.style.cssText = 'border: 1px solid black; padding: 15px;';
-        element.setAttribute('class', 'grid');
+        element.setAttribute('class', `grid grid${i}`);
         gameBox.appendChild(element);
-    
+        gridTempCol();
+
         divs.push(element);
     }
+}
+
+// function for grid template columns
+function gridTempCol() {
+    let auto = [];
+    for (let i = 1; i <= size; i++) {
+        auto.push('auto');
+    }
+    auto = auto.toString().replace(/,/g, " ");
+    gameBox.style.gridTemplateColumns = auto;
 }
 
 //// FUNCTIONALITY ////
@@ -37,10 +49,20 @@ let sketchOn = false;
 let colorOn = false;
 let rainbowOn = false;
 let eraserOn = false;
+
+let pickedColor = false;
+let pickedEraser = false;
+let pickedRainbow = false;
+
 let colorPicker = document.querySelector('#color-picker');
+let colorPicked;
 let rainbowMode = document.querySelector('#rainbow-mode');
 let eraser = document.querySelector('#eraser');
 let clear = document.querySelector('#clear');
+let restart = document.querySelector('#restart');
+
+let selected; // use when styling
+let deselected; // use when styling
 
 // start etch-a-sketch by clicking on grid
 gameBox.addEventListener('click', () => {
@@ -48,31 +70,26 @@ gameBox.addEventListener('click', () => {
     forEachSketch(sketchOn, 'black', undefined);
 });
 
-// color picker - ERROR DUPLICATE BOOLEANS AND INPUTS OCCUR WHEN CLICKING ON COLOR PICKER INPUT
+// color picker
 colorPicker.addEventListener('click', () => {
-    gameBox.addEventListener('click', () => {
-        let colorPicked = colorPicker.value;
-        colorOn = !colorOn;
-        forEachSketch(colorOn, colorPicked, undefined);
-    });
+    pickedColor = true;
+    pickedEraser = false;
+    pickedRainbow = false;
 });
 
 // rainbow mode
 let rainbowColors = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'];
 rainbowMode.addEventListener('click', () => {
-    gameBox.addEventListener('click', () => {
-        rainbowOn = !rainbowOn;
-        let x = 0;
-        forEachSketch(rainbowOn, rainbowColors, x);
-    });
+    pickedRainbow = true;
+    pickedEraser = false;
+    pickedColor = false;
 });
 
 // eraser
 eraser.addEventListener('click', () => {
-    gameBox.addEventListener('click', () => {
-        eraserOn = !eraserOn;
-        forEachSketch(eraserOn, 'white', undefined);
-    });
+    pickedEraser = true;
+    pickedColor = false;
+    pickedRainbow = false;
 });
 
 // clear
@@ -82,40 +99,64 @@ clear.addEventListener('click', () => {
     });
 });
 
+// restart
+restart.addEventListener('click', () => {
+    location.reload();
+});
+
+// game box
+gameBox.addEventListener('click', () => {
+    if (pickedColor === true) {
+        colorPicked = colorPicker.value;
+        colorOn = !colorOn;
+        forEachSketch(colorOn, colorPicked, undefined);
+    }
+
+    if (pickedEraser === true) {
+        eraserOn = !eraserOn;
+        forEachSketch(eraserOn, 'white', undefined);
+    }
+
+    if (pickedRainbow === true) {
+        rainbowOn = !rainbowOn;
+        let x = 0;
+        forEachSketch(rainbowOn, rainbowColors, x);
+    }
+});
+
 // function to keep from repetition
-function forEachSketch(bool, colorOn, x) {
-        if (bool) {
-            divs.forEach(div => {
-                gameBox.style.cursor = 'pointer';
-                div.onmouseover = e => {
-                    let target = e.target;
-                    target.style.background = colorOn;
-                    // if rainbow mode is clicked
-                    if (bool === rainbowOn) {
-                        div.style.backgroundColor = colorOn[x];
-                        x++;
-                        if (x === 7) {
-                            x = 0;
-                        }
+function forEachSketch(bool, color, x) {
+    if (bool) {
+        divs.forEach(div => {
+            gameBox.style.cursor = 'pointer';
+            div.onmouseover = e => {
+                let target = e.target;
+                target.style.background = color;
+                // if rainbow mode is clicked
+                if (bool === rainbowOn) {
+                    div.style.backgroundColor = color[x];
+                    x++;
+                    if (x === 7) {
+                        x = 0;
                     }
                 }
-            })
-        }
+            }
+        })
+    }
 
-        if (!bool) {
-            divs.forEach(div => {
-                gameBox.style.cursor = 'auto';
-                div.onmouseover = e => {
-                    let target = e.target;
-                    let targetColor = target.style.backgroundColor;
-                    target.style.background = targetColor;
-                }
-            })
-        }
+    if (!bool) {
+        divs.forEach(div => {
+            gameBox.style.cursor = 'auto';
+            div.onmouseover = e => {
+                let target = e.target;
+                let targetColor = target.style.backgroundColor;
+                target.style.background = targetColor;
+            }
+        })
+    }
 }
 
 // TO-DO LIST 
-    // color picker bug
-    // grid sizer
+    // grid sizer - needs to be in center of page and sizing needs to occur (have one square split into these different grids. If 1x1, it takes up the entire square and so on)
     // style it
     // add directions button with directions on how to use
