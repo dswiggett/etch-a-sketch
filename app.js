@@ -4,45 +4,43 @@ let divs = [];
 let element;
 
 //// GRID ////
-let gridNum = document.querySelector('#grid-num');
-let gridSize = document.querySelector('#grid');
+let slider = document.querySelector('#grid');
 let size = document.querySelector('#grid').value;
-let grid = document.querySelector('#grid');
-
-// create 16x16 grid of square divs inside game box 
-gridNum.textContent = `${size} x ${size}`;
-createGrid(size);
-
-// function to size grid - FIGURE OUT THE POSITIONING OF IT (CENTERED ON PAGE)
-grid.addEventListener('input', e => {
-    gameBox.innerHTML = '';
+slider.addEventListener('input', (e) => {
     size = e.target.value;
-    gridNum.textContent = `${size} x ${size}`;
-    createGrid(size);
+    updateGrid();
 });
 
-// function to create grid
-function createGrid(grids) {
-    for (let i = 1; i <= grids * grids; i++) {
-        element = document.createElement('div');
-        element.style.cssText = 'border: 1px solid black; padding: 15px;';
-        element.setAttribute('class', `grid grid${i}`);
-        gameBox.appendChild(element);
-        gridTempCol();
-
-        divs.push(element);
+// create the grid
+function createGrid() {
+    for (let i = 0; i < 256; i++) {
+        let div = document.createElement("div");
+        div.classList.add("square");
+        divs.push(div);
+        gameBox.appendChild(div);
     }
 }
 
-// function for grid template columns
-function gridTempCol() {
-    let auto = [];
-    for (let i = 1; i <= size; i++) {
-        auto.push('auto');
+function updateGrid() {
+    gameBox.innerHTML = '';
+    divs = [];
+    gameBox.style.setProperty(
+        "grid-template-columns",
+        `repeat(${size}, 2fr)`
+    );
+    gameBox.style.setProperty(
+        "grid-template-rows",
+        `repeat(${size}, 2fr)`
+    );
+    for (let i = 0; i < size * size; i++) {
+        const div = document.createElement("div");
+        div.classList.add("square");
+        divs.push(div);
+        gameBox.appendChild(div);
     }
-    auto = auto.toString().replace(/,/g, " ");
-    gameBox.style.gridTemplateColumns = auto;
 }
+
+createGrid();
 
 //// FUNCTIONALITY ////
 let sketchOn = false;
@@ -54,17 +52,18 @@ let pickedColor = false;
 let pickedEraser = false;
 let pickedRainbow = false;
 
+let backgroundPicker = document.querySelector('#background-picker');
 let colorPicker = document.querySelector('#color-picker');
 let colorPicked;
 let rainbowMode = document.querySelector('#rainbow-mode');
 let eraser = document.querySelector('#eraser');
 let clear = document.querySelector('#clear');
 let restart = document.querySelector('#restart');
+let backgroundColorPicked = false;
 
 let selected; // use when styling
-let deselected; // use when styling
 
-// start etch-a-sketch by clicking on grid
+// default color
 gameBox.addEventListener('click', () => {
     sketchOn = !sketchOn;
     forEachSketch(sketchOn, 'black', undefined);
@@ -75,6 +74,11 @@ colorPicker.addEventListener('click', () => {
     pickedColor = true;
     pickedEraser = false;
     pickedRainbow = false;
+
+    colorPicker.classList.add('selected');
+    backgroundPicker.classList.remove('selected');
+    rainbowMode.classList.remove('selected');
+    eraser.classList.remove('selected');
 });
 
 // rainbow mode
@@ -83,6 +87,11 @@ rainbowMode.addEventListener('click', () => {
     pickedRainbow = true;
     pickedEraser = false;
     pickedColor = false;
+
+    rainbowMode.classList.add('selected');
+    colorPicker.classList.remove('selected');
+    backgroundPicker.classList.remove('selected');
+    eraser.classList.remove('selected');
 });
 
 // eraser
@@ -90,9 +99,14 @@ eraser.addEventListener('click', () => {
     pickedEraser = true;
     pickedColor = false;
     pickedRainbow = false;
+
+    eraser.classList.add('selected');
+    colorPicker.classList.remove('selected');
+    backgroundPicker.classList.remove('selected');
+    rainbowMode.classList.remove('selected');
 });
 
-// clear
+// clear - REVERT EVERYTHING BACK TO HOW IT WAS AT THE BEGINNING EXCEPT THE COLOR & BACKGROUND COLOR IN THE PICKERS
 clear.addEventListener('click', () => {
     divs.forEach(div => {
         div.style.backgroundColor = 'white';
@@ -104,6 +118,26 @@ restart.addEventListener('click', () => {
     location.reload();
 });
 
+// change grid background color 
+backgroundPicker.addEventListener('click', () => {
+    backgroundPicker.classList.add('selected');
+    colorPicker.classList.remove('selected');
+    eraser.classList.remove('selected');
+    rainbowMode.classList.remove('selected');
+});
+
+backgroundPicker.addEventListener('input', () => {
+    const newBackgroundColor = backgroundPicker.value;
+    backgroundColorPicked = true;
+    divs.forEach(div => {
+        if (div.classList.value === 'square' && div.classList.value !== 'colored') {
+            div.style.backgroundColor = newBackgroundColor;
+            console.log('it worked')
+        }
+    });
+});
+
+
 // game box
 gameBox.addEventListener('click', () => {
     if (pickedColor === true) {
@@ -114,7 +148,12 @@ gameBox.addEventListener('click', () => {
 
     if (pickedEraser === true) {
         eraserOn = !eraserOn;
-        forEachSketch(eraserOn, 'white', undefined);
+        const eraserBackground = backgroundPicker.value;
+        if (!backgroundColorPicked) {
+            forEachSketch(eraserOn, '', undefined);
+        } else {
+            forEachSketch(eraserOn, eraserBackground, undefined);
+        }
     }
 
     if (pickedRainbow === true) {
@@ -132,10 +171,17 @@ function forEachSketch(bool, color, x) {
             div.onmouseover = e => {
                 let target = e.target;
                 target.style.background = color;
+                // if eraser bool is true
+                if (bool === pickedEraser) {
+                    div.classList.remove('colored');
+                } else {
+                    div.classList.add('colored');
+                }
                 // if rainbow mode is clicked
                 if (bool === rainbowOn) {
                     div.style.backgroundColor = color[x];
                     x++;
+                    div.classList.add('colored');
                     if (x === 7) {
                         x = 0;
                     }
@@ -155,8 +201,3 @@ function forEachSketch(bool, color, x) {
         })
     }
 }
-
-// TO-DO LIST 
-    // grid sizer - needs to be in center of page and sizing needs to occur (have one square split into these different grids. If 1x1, it takes up the entire square and so on)
-    // style it
-    // add directions button with directions on how to use
