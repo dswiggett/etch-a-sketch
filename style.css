@@ -1,9 +1,63 @@
-.buttons {
+.main-container {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-evenly;
+    margin: 0 15%;
+    border: 1px solid black;
+    border-radius: 25px;
+    padding: 5% 10%;
+}
+
+.functionality, .buttons {
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid black;
+}
+
+button {
+    background: none;
+    font-size: 15px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 3px 15px;
+    margin: 5px 0;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+#color-picker {
+    background: none;
+    height: 75px;
+    width: 75px;
+}
+
+#background-picker {
+    background: none;
+    height: 75px;
+    width: 75px;
+}
+
+input:hover {
+    cursor: pointer;
 }
 
 .game-box {
+    margin-right: 40px;
     display: inline-grid;
+    grid-template-columns: repeat(16, 2fr);
+    grid-template-rows: repeat(16, 2fr);
+    border: 5px solid black;
+    border-radius: 5px;
+    height: 450px;
+    width: 450px;
+}
+
+.square {
+    background-color: white;
+    border: 1px solid black;
+}
+
+.selected {
+    background-color: grey !important;
 }
