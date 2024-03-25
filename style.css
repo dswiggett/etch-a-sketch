@@ -15,6 +15,10 @@ body {
     margin: 0 10% 0 0;
 }
 
+.center {
+    text-align: center;
+}
+
 /* Left Hand Buttons */
 .functionality {
     display: flex;
@@ -94,4 +98,13 @@ button:hover {
 
 .square {
     background-color: white;
+}
+
+/* Credits */
+.credit {
+    padding-top: 12%;
+}
+
+a {
+    color: black;
 }
