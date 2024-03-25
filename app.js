@@ -36,6 +36,7 @@ function updateGrid() {
         const div = document.createElement("div");
         div.classList.add("square");
         divs.push(div);
+        div.style.backgroundColor = backgroundPicker.value;
         gameBox.appendChild(div);
     }
 }
@@ -79,6 +80,11 @@ colorPicker.addEventListener('click', () => {
     backgroundPicker.classList.remove('selected');
     rainbowMode.classList.remove('selected');
     eraser.classList.remove('selected');
+
+    rainbowMode.style.backgroundColor = 'white';
+    rainbowMode.style.color = 'black';
+    eraser.style.backgroundColor = 'white';
+    eraser.style.color = 'black';
 });
 
 // rainbow mode
@@ -92,6 +98,8 @@ rainbowMode.addEventListener('click', () => {
     colorPicker.classList.remove('selected');
     backgroundPicker.classList.remove('selected');
     eraser.classList.remove('selected');
+
+    buttonSelected(rainbowMode, eraser);
 });
 
 // eraser
@@ -104,12 +112,16 @@ eraser.addEventListener('click', () => {
     colorPicker.classList.remove('selected');
     backgroundPicker.classList.remove('selected');
     rainbowMode.classList.remove('selected');
+
+    buttonSelected(eraser, rainbowMode);
 });
 
-// clear - REVERT EVERYTHING BACK TO HOW IT WAS AT THE BEGINNING EXCEPT THE COLOR & BACKGROUND COLOR IN THE PICKERS
+// clear
 clear.addEventListener('click', () => {
     divs.forEach(div => {
-        div.style.backgroundColor = 'white';
+        div.style.backgroundColor = backgroundPicker.value;
+        div.className = '';
+        div.classList.add('square');
     });
 });
 
@@ -132,11 +144,17 @@ backgroundPicker.addEventListener('input', () => {
     divs.forEach(div => {
         if (div.classList.value === 'square' && div.classList.value !== 'colored') {
             div.style.backgroundColor = newBackgroundColor;
-            console.log('it worked')
         }
     });
 });
 
+// selected buttons
+function buttonSelected(selected, unselected) {
+    selected.style.backgroundColor = 'black';
+    selected.style.color = 'white';
+    unselected.style.backgroundColor = 'white';
+    unselected.style.color = 'black';
+}
 
 // game box
 gameBox.addEventListener('click', () => {
